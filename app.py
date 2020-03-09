@@ -3,7 +3,7 @@ import sqlite3
 import bcrypt
 import json
 
-app = Flask(__name__, template_folder='template')
+app = Flask(__name__, template_folder='http')
 
 @app.route('/register', methods= ['POST','GET'])
 def register():
