@@ -1,5 +1,6 @@
 from flask import Flask, request, redirect, render_template, json
 from flask_jwt_extended import (create_access_token, create_refresh_token, JWTManager, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
+from flask_cors import CORS
 
 import sqlite3
 import bcrypt
@@ -7,6 +8,8 @@ import json
 import demjson
 
 app = Flask(__name__, template_folder='http')
+CORS(app, support_credentials=True)
+
 
 app.config['JWT_SECRET_KEY']= 'monkeygang'
 jwt = JWTManager(app)
@@ -15,7 +18,7 @@ jwt = JWTManager(app)
 def register():
     connection = sqlite3.connect('fakebank.db')
     cursor = connection.cursor()
-
+ 
     #email = request.data.email
     #username = request.data.username
     #funds = request.data.funds
@@ -27,6 +30,8 @@ def register():
     username = requestData['username']
     funds = requestData['funds']
     password = bytes(requestData['password'].encode('utf-8'))
+
+    
     pepper = bytes("sneezeSauce".encode('utf-8'))
 
     salt = bcrypt.gensalt()
@@ -39,7 +44,10 @@ def register():
         cursor.execute(querry, (email,username,funds,encryptedPass))
         connection.commit()
         connection.close()
-        return redirect('/login')    
+
+        access_token = create_access_token(identity=email)
+        #refresh_token = create_refresh_token(identity=email)
+        return (json.dumps({'access_token': access_token}), 200, {'content-type':'application/json'})   
     except:
         "Registration Error"
         print("error")
@@ -77,7 +85,6 @@ def login():
             #login token stuff
             access_token = create_access_token(identity=email)
             #refresh_token = create_refresh_token(identity=email)
-            print(user[1])
             return (json.dumps({'access_token': access_token}), 200, {'content-type':'application/json'})
         else:
             #wrong password
