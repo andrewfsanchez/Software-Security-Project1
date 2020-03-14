@@ -1,5 +1,6 @@
 import React from 'react';
 import {Redirect} from 'react-router-dom'
+import axios from 'axios'
 
 class LoginForm extends React.Component {
   constructor() {
@@ -10,7 +11,8 @@ class LoginForm extends React.Component {
       password : "",
       funds : 9999999,
       isError : false,
-      hasSubmitted : false
+      hasSubmitted : false,
+      res : {}
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -47,6 +49,10 @@ class LoginForm extends React.Component {
         * if not in database, return alert
         */
 
+        const user = {email: this.state.email, password: this.state.password};
+
+        axios.post('http://localhost:5000/login', user);
+
         /**
          * After getting info from database, let user get to their dashboard page
          * Need to get funds at least from database and set state here
@@ -60,6 +66,7 @@ class LoginForm extends React.Component {
     if(this.state.hasSubmitted) {
       return(
         <Redirect from="/" to={{pathname: "/Dashboard", state: { email: this.state.email, username: this.state.username, funds: this.state.funds}}} />
+
       );
     }
     else {

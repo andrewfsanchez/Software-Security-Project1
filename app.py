@@ -4,6 +4,7 @@ from flask_jwt_extended import (create_access_token, create_refresh_token, JWTMa
 import sqlite3
 import bcrypt
 import json
+import demjson
 
 app = Flask(__name__, template_folder='http')
 
@@ -15,11 +16,19 @@ def register():
     connection = sqlite3.connect('fakebank.db')
     cursor = connection.cursor()
 
-    email = request.data.email
-    username = request.data.username
-    funds = request.data.funds
-    password = bytes(request.data.password, 'utf-8')
-    pepper = bytes("sneezeSauce", 'utf-8')
+    #email = request.data.email
+    #username = request.data.username
+    #funds = request.data.funds
+    #password = bytes(request.data.password, 'utf-8')
+    #pepper = bytes("sneezeSauce", 'utf-8')
+
+    requestData = demjson.decode(request.data)
+    email = requestData['email']
+    username = requestData['username']
+    funds = requestData['funds']
+    password = bytes(requestData['password'].encode('utf-8'))
+    pepper = bytes("sneezeSauce".encode('utf-8'))
+
     salt = bcrypt.gensalt()
     encryptedPass= bcrypt.hashpw(password + pepper, salt)
 
@@ -43,9 +52,13 @@ def login():
     cursor= connection.cursor()
 
     #print(request.headers.get('email'))
-    email= request.headers.get('email', None)
+    #email= request.headers.get('email', None)
     
-    password=bytes(request.headers.get('password'), 'utf-8')
+    #password=bytes(request.headers.get('password'), 'utf-8')
+
+    requestData = demjson.decode(request.data)
+    email = requestData['email']
+    password = bytes(requestData['password'].encode('utf-8'))
     try:
             
         cursor.execute("SELECT * FROM accounts WHERE email= ?", (email,))
@@ -57,7 +70,8 @@ def login():
             hashedpass= user[3]
         except:
             hashedpass=''
-        pepper = bytes("sneezeSauce", 'utf-8')
+        #pepper = bytes("sneezeSauce", 'utf-8')
+        pepper = bytes("sneezeSauce".encode('utf-8'))
             
         if hashedpass!='' and bcrypt.checkpw(password + pepper, hashedpass):
             #login token stuff

@@ -1,5 +1,6 @@
 import React from 'react';
 import {Redirect} from 'react-router-dom'
+import axios from 'axios'
 
 class RegisterForm extends React.Component {
   constructor() {
@@ -52,6 +53,12 @@ class RegisterForm extends React.Component {
             * No error, then hand the information to database and continue from there
             * insert logic here
             */
+
+            const user = {email: this.state.email, username: this.state.username, password: this.state.password, funds: this.state.funds};
+
+            axios.post('http://localhost:5000/register', user).then(result => {
+                console.log(result);
+            });
 
             /**
              * After passing info to database, let user get to their dashboard page
