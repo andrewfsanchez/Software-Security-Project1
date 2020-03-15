@@ -33,6 +33,8 @@ class LoginForm extends React.Component {
     * Basic checks below
     */
 
+    event.preventDefault();
+
     if(this.state.email === "" || !this.state.email.includes("@")) {
         this.setState({isError : true});
         alert("Invalid email...");
@@ -51,14 +53,14 @@ class LoginForm extends React.Component {
 
         const user = {email: this.state.email, password: this.state.password};
 
-        axios.post('http://localhost:5000/login', user);
-
-        /**
-         * After getting info from database, let user get to their dashboard page
-         * Need to get funds at least from database and set state here
-         */
-
-        this.setState({hasSubmitted : true});
+        axios.post('http://localhost:5000/login', user).then(result => {
+          console.log(result);
+          this.setState({hasSubmitted : true});
+        })
+        .catch(error => {
+          console.log(error);
+          alert("Invalid account information. Please try again");
+        });
     }
   }
   

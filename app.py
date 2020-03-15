@@ -42,6 +42,7 @@ def register():
                 (email, username, funds, password)
                 VALUES (?,?,?,?)"""
         cursor.execute(querry, (email,username,funds,encryptedPass))
+
         connection.commit()
         connection.close()
 
@@ -67,23 +68,27 @@ def login():
     requestData = demjson.decode(request.data)
     email = requestData['email']
     password = bytes(requestData['password'].encode('utf-8'))
+
     try:
             
         cursor.execute("SELECT * FROM accounts WHERE email= ?", (email,))
-           
+
         connection.commit()
         user=cursor.fetchone()
         hashedpass=''
+
         try:
             hashedpass= user[3]
         except:
             hashedpass=''
         #pepper = bytes("sneezeSauce", 'utf-8')
         pepper = bytes("sneezeSauce".encode('utf-8'))
-            
-        if hashedpass!='' and bcrypt.checkpw(password + pepper, hashedpass):
+
+        pepperedPass = password + pepper
+        if hashedpass!='' and bcrypt.checkpw(pepperedPass.encode('utf-8'), hashedpass.encode('utf-8')):
             #login token stuff
             access_token = create_access_token(identity=email)
+
             #refresh_token = create_refresh_token(identity=email)
             return (json.dumps({'access_token': access_token}), 200, {'content-type':'application/json'})
         else:

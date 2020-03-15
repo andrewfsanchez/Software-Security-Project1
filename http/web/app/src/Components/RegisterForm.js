@@ -32,6 +32,7 @@ class RegisterForm extends React.Component {
         * Basic checks below
         */
 
+       event.preventDefault();
         if(this.state.email === "" || !this.state.email.includes("@")) {
             this.setState({isError : true});
             alert("Invalid email...");
@@ -56,15 +57,13 @@ class RegisterForm extends React.Component {
 
             const user = {email: this.state.email, username: this.state.username, password: this.state.password, funds: this.state.funds};
 
-            axios.post('http://localhost:5000/register', user).then(result => {
-                console.log(result);
+            axios.post('http://localhost:5000/register', user).then(response => {
+                this.setState({hasSubmitted : true});
+            })
+            .catch(error => {
+                console.log(error);
+                alert("Account already exists. Please go to the login page");
             });
-
-            /**
-             * After passing info to database, let user get to their dashboard page
-             */
-
-            this.setState({hasSubmitted : true});
         }
     }
   
