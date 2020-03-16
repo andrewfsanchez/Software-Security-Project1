@@ -1,5 +1,6 @@
 from flask import Flask, request, redirect, render_template, json
 from flask_jwt_extended import (create_access_token, create_refresh_token, JWTManager, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
+from flask_restful import Api
 from flask_cors import CORS
 
 import sqlite3
@@ -85,9 +86,11 @@ def login():
         pepper = bytes("sneezeSauce".encode('utf-8'))
 
         pepperedPass = password + pepper
-        if hashedpass!='' and bcrypt.checkpw(pepperedPass.encode('utf-8'), hashedpass.encode('utf-8')):
+        if hashedpass!='' and bcrypt.checkpw(pepperedPass, hashedpass):
             #login token stuff
+            
             access_token = create_access_token(identity=email)
+            
 
             #refresh_token = create_refresh_token(identity=email)
             return (json.dumps({'access_token': access_token}), 200, {'content-type':'application/json'})
@@ -99,6 +102,57 @@ def login():
         #print('error')
         return (json.dumps({'error': 'login error'}), 404, {'content-type':'application/json'})
 
+
+@app.route('/home', methods=['GET'])
+@jwt_required
+def get():
+    connection = sqlite3.connect('fakebank.db')
+    cursor= connection.cursor()
+    try:
+        current_user=get_jwt_identity()
+        cursor.execute("SELECT * FROM accounts WHERE email= ?", (current_user,))
+        connection.commit()
+
+        user=cursor.fetchone()
+
+        return (json.dumps({'username':user[1], 'funds':user[2]}), 200, {'content-type':'application/json'})
+
+    except:
+        return (json.dumps({'error': 'querry error'}), 400, {'content-type':'application/json'})
+    
+    
+    #return (json.dumps({'yay': '?'}), 200, {'content-type':'application/json'})
+
+@app.route('/transfer', methods=['POST'])
+@jwt_required
+def transfer():
+    connection = sqlite3.connect('fakebank.db')
+    cursor= connection.cursor()
+
+    requestData = demjson.decode(request.data)
+    sender= requestData['sender']
+    receiver= requestData['receiver']
+    transferAmount= requestData['transferAmount']
+
+    try:
+        cursor.execute("SELECT * FROM accounts WHERE email= ?", (sender,))
+        
+        senderInfo=cursor.fetchone()
+        
+
+        if (int(senderInfo[2])<int(transferAmount)):
+            return (json.dumps({'error': 'invalid amount given'}), 400, {'content-type':'application/json'})
+        
+        cursor.execute("""UPDATE accounts SET funds= funds+? WHERE email = ?""", (int(transferAmount), receiver,))
+        cursor.execute("""UPDATE accounts SET funds= funds-? WHERE email = ?""", (int(transferAmount), sender,))
+        
+        connection.commit()
+
+        
+
+        return (json.dumps({'success': 'funds transfered'}), 200, {'content-type':'application/json'})
+    except:
+        return (json.dumps({'error': 'querry error'}), 400, {'content-type':'application/json'})
 
 if __name__ == '__main__':
     app.run(debug=True)
