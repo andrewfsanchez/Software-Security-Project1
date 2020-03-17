@@ -11,7 +11,8 @@ class RegisterForm extends React.Component {
       password : "",
       funds : 0,
       isError : false,
-      hasSubmitted : false
+      hasSubmitted : false,
+      access_token: ""
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -58,7 +59,7 @@ class RegisterForm extends React.Component {
             const user = {email: this.state.email, username: this.state.username, password: this.state.password, funds: this.state.funds};
 
             axios.post('http://localhost:5000/register', user).then(response => {
-                this.setState({hasSubmitted : true});
+                this.setState({hasSubmitted : true, access_token : response.data.access_token});
             })
             .catch(error => {
                 console.log(error);
@@ -70,7 +71,7 @@ class RegisterForm extends React.Component {
     render() {
         if(this.state.hasSubmitted) {
             return(
-                <Redirect from="/" to={{pathname: "/Dashboard", state: { email: this.state.email, username: this.state.username, funds: this.state.funds}}} />
+                <Redirect from="/" to={{pathname: "/Dashboard", state: { email: this.state.email, username: this.state.username, funds: this.state.funds, access_token: this.state.access_token}}} />
             );
         }
         else {

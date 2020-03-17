@@ -86,9 +86,8 @@ def login():
         pepper = bytes("sneezeSauce".encode('utf-8'))
 
         pepperedPass = password + pepper
-        if hashedpass!='' and bcrypt.checkpw(pepperedPass, hashedpass):
+        if hashedpass!='' and bcrypt.checkpw(pepperedPass.encode('utf-8'), hashedpass.encode('utf-8')):
             #login token stuff
-            
             access_token = create_access_token(identity=email)
             
 
@@ -142,7 +141,7 @@ def transfer():
 
         if (int(senderInfo[2])<int(transferAmount)):
             return (json.dumps({'error': 'invalid amount given'}), 400, {'content-type':'application/json'})
-        
+
         cursor.execute("""UPDATE accounts SET funds= funds+? WHERE email = ?""", (int(transferAmount), receiver,))
         cursor.execute("""UPDATE accounts SET funds= funds-? WHERE email = ?""", (int(transferAmount), sender,))
         

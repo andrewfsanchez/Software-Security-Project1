@@ -1,4 +1,5 @@
 import React from 'react';
+import Axios from 'axios';
 
 class Dashboard extends React.Component {  
     constructor(props) {
@@ -9,7 +10,8 @@ class Dashboard extends React.Component {
             username : "",
             funds : 0,
             transferTo : "",
-            transferAmount : ""
+            transferAmount : "",
+            access_token: ""
         }
 
         if(props.location.state !== undefined) {
@@ -18,7 +20,8 @@ class Dashboard extends React.Component {
                 username : props.location.state.username,
                 funds : props.location.state.funds,
                 transferTo : "", 
-                transferAmount : ""
+                transferAmount : "",
+                access_token : props.location.state.access_token
             }
         }
 
@@ -42,18 +45,32 @@ class Dashboard extends React.Component {
         if(this.state.funds < this.state.transferAmount) {
             alert("Not enough funds...");
         }
-        else if(1 === -1 /** Database does not contain target username */) {
-            alert("User not found...")
+        else if(this.state.username === this.state.transferTo) {
+            alert("Cannot transfer to yourself...")
         }
         else {
             /** If no errors, then transfer the money and update
              *  Notify database of updated funds for target username
              *  Notify database of updated funds for current user
+             * 
+             *             
              */
-            
-            this.setState((state, props) => ({
-                funds : state.funds - state.transferAmount
-            }));
+
+            const sendInfo = {sender: this.state.email, receiver: this.state.transferTo, transferAmount: this.state.transferAmount};
+            Axios.post('http://localhost:5000/transfer', sendInfo, { headers: {"Authorization" : `Bearer ${this.state.access_token}`} })
+            .then(result => {
+                console.log(result);
+                this.setState((state, props) => ({
+                    funds : state.funds - state.transferAmount,
+                    transferTo : "", 
+                    transferAmount : 0
+                }));
+                alert("Funds transfered");
+            })
+            .catch(error => {
+                console.log(error);
+                alert("Invalid account information. Please try again");
+            });
         }
     }
 
@@ -69,7 +86,7 @@ class Dashboard extends React.Component {
                     <form onSubmit={this.handleSubmit}>
                         <h3>Transfer Money:</h3>
                         <p>To:</p>
-                        <input type="text" placeholder="Username" value={this.state.transferTo} name="transferTo" id="transferTo" onChange={this.handleChange} />
+                        <input type="text" placeholder="email" value={this.state.transferTo} name="transferTo" id="transferTo" onChange={this.handleChange} />
                         <p>Amount:</p>
                         <input type="number" min="1" placeholder="0" value={this.state.transferAmount} name="transferAmount" id="transferAmount" onChange={this.handleChange} />
                         <br /><br /><br />

@@ -12,7 +12,7 @@ class LoginForm extends React.Component {
       funds : 9999999,
       isError : false,
       hasSubmitted : false,
-      res : {}
+      access_token : ""
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -47,6 +47,7 @@ class LoginForm extends React.Component {
         /**
         * No error, then get the information from the database and continue from there
         * insert logic here
+        * {'Authorization': 'Bearer <JWT>'}
         * 
         * if not in database, return alert
         */
@@ -54,8 +55,12 @@ class LoginForm extends React.Component {
         const user = {email: this.state.email, password: this.state.password};
 
         axios.post('http://localhost:5000/login', user).then(result => {
-          console.log(result);
-          this.setState({hasSubmitted : true});
+          console.log(result.data.access_token);
+
+          axios.get('http://localhost:5000/home', { headers: {"Authorization" : `Bearer ${result.data.access_token}`} }).then(loginInfo => {
+            console.log(loginInfo)
+            this.setState({username: loginInfo.data.username, funds: loginInfo.data.funds, hasSubmitted : true, access_token : result.data.access_token});
+          });
         })
         .catch(error => {
           console.log(error);
@@ -67,7 +72,7 @@ class LoginForm extends React.Component {
   render() {
     if(this.state.hasSubmitted) {
       return(
-        <Redirect from="/" to={{pathname: "/Dashboard", state: { email: this.state.email, username: this.state.username, funds: this.state.funds}}} />
+        <Redirect from="/" to={{pathname: "/Dashboard", state: { email: this.state.email, username: this.state.username, funds: this.state.funds, access_token: this.state.access_token}}} />
 
       );
     }
