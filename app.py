@@ -68,11 +68,12 @@ def login():
 
     requestData = demjson.decode(request.data)
     email = requestData['email']
+
     password = bytes(requestData['password'].encode('utf-8'))
 
     try:
-            
-        cursor.execute("SELECT * FROM accounts WHERE email= ?", (email,))
+        
+        cursor.executescript("SELECT * FROM accounts WHERE email= '%s'" % email)
 
         connection.commit()
         user=cursor.fetchone()
@@ -86,7 +87,9 @@ def login():
         pepper = bytes("sneezeSauce".encode('utf-8'))
 
         pepperedPass = password + pepper
-        if hashedpass!='' and bcrypt.checkpw(pepperedPass.encode('utf-8'), hashedpass.encode('utf-8')):
+
+        
+        if hashedpass!='' and bcrypt.checkpw(pepperedPass, hashedpass):
             #login token stuff
             access_token = create_access_token(identity=email)
             
@@ -99,7 +102,7 @@ def login():
 
     except:
         #print('error')
-        return (json.dumps({'error': 'login error'}), 404, {'content-type':'application/json'})
+        return (json.dumps({'error': 'login error'}), 400, {'content-type':'application/json'})
 
 
 @app.route('/home', methods=['GET'])
@@ -141,9 +144,9 @@ def transfer():
 
         if (int(senderInfo[2])<int(transferAmount)):
             return (json.dumps({'error': 'invalid amount given'}), 400, {'content-type':'application/json'})
-
-        cursor.execute("""UPDATE accounts SET funds= funds+? WHERE email = ?""", (int(transferAmount), receiver,))
-        cursor.execute("""UPDATE accounts SET funds= funds-? WHERE email = ?""", (int(transferAmount), sender,))
+        print(receiver)
+        cursor.execute("UPDATE accounts SET funds= funds+? WHERE email = ?", (int(transferAmount), receiver,))
+        cursor.execute("UPDATE accounts SET funds= funds-? WHERE email = ?", (int(transferAmount), sender,))
         
         connection.commit()
 
