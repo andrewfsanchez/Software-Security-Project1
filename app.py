@@ -73,7 +73,7 @@ def login():
 
     try:
         
-        cursor.executescript("SELECT * FROM accounts WHERE email= '%s'" % email)
+        cursor.execute("SELECT * FROM accounts WHERE email= ?", (email,))
 
         connection.commit()
         user=cursor.fetchone()
@@ -110,11 +110,9 @@ def login():
 def get():
     connection = sqlite3.connect('fakebank.db')
     cursor= connection.cursor()
-    
-    current_user=demjson.decode(request.data)["email"]
 
     try:
-        #current_user=get_jwt_identity()
+        current_user=get_jwt_identity()
         cursor.execute("SELECT * FROM accounts WHERE email= ?", (current_user,))
         connection.commit()
 
