@@ -1,5 +1,6 @@
 import React from 'react';
 import Axios from 'axios';
+import Search from './Search';
 
 class Dashboard extends React.Component {  
     constructor(props) {
@@ -82,7 +83,9 @@ class Dashboard extends React.Component {
                     <h1>Welcome user: {this.state.username}</h1>
                     <br />
                     <h2>Available funds: {this.state.funds}</h2>
-                    <br /><br /><br /><br />
+                    <br />
+                    <Search />
+                    <br /><br /><br />
                     <form onSubmit={this.handleSubmit}>
                         <h3>Transfer Money:</h3>
                         <p>To:</p>
