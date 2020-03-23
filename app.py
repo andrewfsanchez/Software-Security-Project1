@@ -11,7 +11,7 @@ import demjson
 app = Flask(__name__, template_folder='http')
 CORS(app, supports_credentials=True)
 
-app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+app.config['JWT_TOKEN_LOCATION'] = ['cookies', 'headers']
 app.config['JWT_SECRET_KEY']= 'monkeygang'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 jwt = JWTManager(app)
@@ -131,8 +131,27 @@ def get():
     except:
         return (json.dumps({'error': 'querry error'}), 400, {'content-type':'application/json'})
     
+
+@app.route('/home-insecure', methods=['GET'])
+@jwt_required
+def get_secure():
+    connection = sqlite3.connect('fakebank.db')
+    cursor= connection.cursor()
     
-    #return (json.dumps({'yay': '?'}), 200, {'content-type':'application/json'})
+    current_user=demjson.decode(request.data)["email"]
+
+    try:
+        #current_user=get_jwt_identity()
+        cursor.execute("SELECT * FROM accounts WHERE email= ?", (current_user,))
+        connection.commit()
+
+        user=cursor.fetchone()
+
+        return (json.dumps({'username':user[1], 'funds':user[2]}), 200, {'content-type':'application/json'})
+
+    except:
+        return (json.dumps({'error': 'querry error'}), 400, {'content-type':'application/json'})
+    
 
 @app.route('/transfer', methods=['POST'])
 @jwt_required
@@ -168,7 +187,7 @@ def transfer():
 
 
 
-@app.route('/search', methods=['POST'])
+@app.route('/search-insecure', methods=['POST'])
 def search():
     connection = sqlite3.connect('fakebank.db')
     cursor= connection.cursor()
@@ -176,10 +195,27 @@ def search():
     requestData = demjson.decode(request.data)
     username = requestData['username']
 
-    
-    print("SELECT * FROM accounts WHERE username= '%s';" % username)
-
     cursor.execute("SELECT * FROM accounts WHERE username= '%s';" % username)
+    
+    connection.commit()
+
+    users=[]
+    for row in cursor.fetchall():
+        users.append({'email':row[0],'funds':row[2]})
+
+    print(users)
+    return (json.dumps({'users': users}), 200, {'content-type':'application/json'})
+
+
+@app.route('/search', methods=['POST'])
+def search_secure():
+    connection = sqlite3.connect('fakebank.db')
+    cursor= connection.cursor()
+
+    requestData = demjson.decode(request.data)
+    username = requestData['username']
+
+    cursor.execute("SELECT * FROM accounts WHERE username= ?;" , (username,))
     
     connection.commit()
 
