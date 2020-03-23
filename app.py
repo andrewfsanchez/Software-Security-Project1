@@ -181,7 +181,7 @@ def search():
 
     users=[]
     for row in cursor.fetchall():
-        users.append({'username':row[1],'funds':row[2]})
+        users.append({'email':row[0],'funds':row[2]})
 
     print(users)
     return (json.dumps({'users': users}), 200, {'content-type':'application/json'})
