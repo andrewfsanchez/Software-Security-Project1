@@ -9,10 +9,11 @@ import json
 import demjson
 
 app = Flask(__name__, template_folder='http')
-CORS(app, support_credentials=True)
+CORS(app, supports_credentials=True)
 
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_SECRET_KEY']= 'monkeygang'
+app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 jwt = JWTManager(app)
 
 @app.route('/register', methods= ['POST'])
