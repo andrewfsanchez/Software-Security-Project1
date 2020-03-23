@@ -1,6 +1,7 @@
 import React from 'react';
 import {Redirect} from 'react-router-dom'
 import axios from 'axios'
+import Cookies from 'js-cookie'
 
 class RegisterForm extends React.Component {
   constructor() {
@@ -60,6 +61,7 @@ class RegisterForm extends React.Component {
 
             axios.post('http://localhost:5000/register', user).then(response => {
                 this.setState({hasSubmitted : true, access_token : response.data.access_token});
+                Cookies.set('access_token_cookie', `${response.data.access_token}`);
             })
             .catch(error => {
                 console.log(error);

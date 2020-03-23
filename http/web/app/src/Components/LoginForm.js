@@ -1,6 +1,7 @@
 import React from 'react';
 import {Redirect} from 'react-router-dom'
 import axios from 'axios'
+import Cookies from 'js-cookie'
 
 class LoginForm extends React.Component {
   constructor() {
@@ -56,8 +57,8 @@ class LoginForm extends React.Component {
 
         axios.post('http://localhost:5000/login', user).then(result => {
           console.log(result.data.access_token);
-
-          axios.get('http://localhost:5000/home', { headers: {"Authorization" : `Bearer ${result.data.access_token}`} }).then(loginInfo => {
+          Cookies.set('access_token_cookie', `${result.data.access_token}`)
+          axios.get('http://localhost:5000/home', { withCredentials: true }).then(loginInfo => {
             console.log(loginInfo)
             this.setState({username: loginInfo.data.username, funds: loginInfo.data.funds, hasSubmitted : true, access_token : result.data.access_token});
           });

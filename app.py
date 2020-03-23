@@ -11,7 +11,7 @@ import demjson
 app = Flask(__name__, template_folder='http')
 CORS(app, support_credentials=True)
 
-
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_SECRET_KEY']= 'monkeygang'
 jwt = JWTManager(app)
 
@@ -135,6 +135,7 @@ def get():
 @app.route('/transfer', methods=['POST'])
 @jwt_required
 def transfer():
+    print('hey')
     connection = sqlite3.connect('fakebank.db')
     cursor= connection.cursor()
 
@@ -173,6 +174,7 @@ def search():
     requestData = demjson.decode(request.data)
     username = requestData['username']
 
+    
     print("SELECT * FROM accounts WHERE username= '%s';" % username)
 
     cursor.execute("SELECT * FROM accounts WHERE username= '%s';" % username)

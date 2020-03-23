@@ -1,6 +1,7 @@
 import React from 'react';
 import Axios from 'axios';
 import Search from './Search';
+import Cookies from 'js-cookie'
 
 class Dashboard extends React.Component {  
     constructor(props) {
@@ -58,7 +59,8 @@ class Dashboard extends React.Component {
              */
 
             const sendInfo = {sender: this.state.email, receiver: this.state.transferTo, transferAmount: this.state.transferAmount};
-            Axios.post('http://localhost:5000/transfer', sendInfo, { headers: {"Authorization" : `Bearer ${this.state.access_token}`} })
+            Cookies.get('access_token_cookie');
+            Axios.post('http://localhost:5000/transfer', sendInfo, { withCredentials: true })
             .then(result => {
                 console.log(result);
                 this.setState((state, props) => ({
