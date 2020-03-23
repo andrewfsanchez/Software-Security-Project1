@@ -74,7 +74,6 @@ def login():
 
     try:
         a="SELECT * FROM accounts WHERE email= '%s';" % email
-        print (a)
         cursor.execute(a)
         
         connection.commit()
@@ -82,7 +81,7 @@ def login():
 
         user=cursor.fetchone()
 
-        print(user)
+        
         hashedpass=''
 
         try:
@@ -94,11 +93,13 @@ def login():
         pepper = bytes("sneezeSauce".encode('utf-8'))
 
         pepperedPass = password + pepper
-        
-        if hashedpass!='' and bcrypt.checkpw(pepperedPass.encode('utf-8'), hashedpass.encode('utf-8')):
+
+
+
+        if hashedpass!='' and bcrypt.checkpw(pepperedPass, hashedpass):
             #login token stuff
             access_token = create_access_token(identity=email)
-
+            
             #refresh_token = create_refresh_token(identity=email)
             return (json.dumps({'access_token': access_token}), 200, {'content-type':'application/json'})
         else:
