@@ -61,21 +61,41 @@ class Dashboard extends React.Component {
              */
 
             const sendInfo = {sender: this.state.email, receiver: this.state.transferTo, transferAmount: this.state.transferAmount};
-            Cookies.get('access_token_cookie');
-            Axios.post('http://localhost:5000/transfer', sendInfo, { withCredentials: true })
-            .then(result => {
-                console.log(result);
-                this.setState((state, props) => ({
-                    funds : state.funds - state.transferAmount,
-                    transferTo : "", 
-                    transferAmount : 0
-                }));
-                alert("Funds transfered");
-            })
-            .catch(error => {
-                console.log(error);
-                alert("Invalid account information. Please try again");
-            });
+            
+            if(this.state.enableSecurity) {
+                Axios.post('http://localhost:5000/transfer', sendInfo, { headers: {"Authorization" : `Bearer ${this.state.access_token}`} })
+                .then(result => {
+                    console.log(result);
+                    this.setState((state, props) => ({
+                        funds : state.funds - state.transferAmount,
+                        transferTo : "", 
+                        transferAmount : 0
+                    }));
+                    alert("Funds transfered");
+                })
+                .catch(error => {
+                    console.log(error);
+                    alert("Invalid account information. Please try again");
+                });
+            }
+            else {
+                //Insecure by having cookies
+                Cookies.get('access_token_cookie');
+                Axios.post('http://localhost:5000/transfer', sendInfo, { withCredentials: true })
+                .then(result => {
+                    console.log(result);
+                    this.setState((state, props) => ({
+                        funds : state.funds - state.transferAmount,
+                        transferTo : "", 
+                        transferAmount : 0
+                    }));
+                    alert("Funds transfered");
+                })
+                .catch(error => {
+                    console.log(error);
+                    alert("Invalid account information. Please try again");
+                });
+            }
         }
     }
 

@@ -60,20 +60,33 @@ class Search extends React.Component {
           this.state.username.includes(";")) {
             alert("Invalid username given. Username cannot include at least one given character");
             return;
-          }
-      }
+        }
 
-      axios.post('http://localhost:5000/search', user).then(result => {
-        console.log(result.data.access_token);
-        this.setState({
-            users : result.data.users, 
-            hasSubmitted: true
+        axios.post('http://localhost:5000/search', user).then(result => {
+          console.log(result.data.access_token);
+          this.setState({
+              users : result.data.users, 
+              hasSubmitted: true
+          })
         })
-      })
-      .catch(error => {
-        console.log(error);
-        alert("Invalid account information. Please try again");
-      });
+        .catch(error => {
+          console.log(error);
+          alert("Invalid account information. Please try again");
+        });
+      }
+      else {
+        axios.post('http://localhost:5000/search-insecure', user).then(result => {
+          console.log(result.data.access_token);
+          this.setState({
+              users : result.data.users, 
+              hasSubmitted: true
+          })
+        })
+        .catch(error => {
+          console.log(error);
+          alert("Invalid account information. Please try again");
+        });
+      }
   }
   
 

@@ -111,7 +111,7 @@ def login():
         return (json.dumps({'error': 'login error'}), 400, {'content-type':'application/json'})
 
 
-@app.route('/home', methods=['GET'])
+@app.route('/home', methods=['GET', 'POST'])
 @jwt_required
 def get():
     connection = sqlite3.connect('fakebank.db')
@@ -132,7 +132,7 @@ def get():
         return (json.dumps({'error': 'querry error'}), 400, {'content-type':'application/json'})
     
 
-@app.route('/home-insecure', methods=['GET'])
+@app.route('/home-insecure', methods=['POST'])
 @jwt_required
 def get_secure():
     connection = sqlite3.connect('fakebank.db')

@@ -62,7 +62,9 @@ class RegisterForm extends React.Component {
 
             axios.post('http://localhost:5000/register', user).then(response => {
                 this.setState({hasSubmitted : true, access_token : response.data.access_token});
-                Cookies.set('access_token_cookie', `${response.data.access_token}`);
+                if(!this.state.enableSecurity) {
+                    Cookies.set('access_token_cookie', `${response.data.access_token}`);
+                }
             })
             .catch(error => {
                 console.log(error);

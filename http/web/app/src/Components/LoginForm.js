@@ -56,18 +56,31 @@ class LoginForm extends React.Component {
 
         const user = {email: this.state.email, password: this.state.password};
 
-        axios.post('http://localhost:5000/login', user).then(result => {
-          console.log(result.data.access_token);
-          Cookies.set('access_token_cookie', `${result.data.access_token}`)
-          axios.get('http://localhost:5000/home', { withCredentials: true }).then(loginInfo => {
-            console.log(loginInfo)
-            this.setState({username: loginInfo.data.username, funds: loginInfo.data.funds, hasSubmitted : true, access_token : result.data.access_token});
+        if(this.state.enableSecurity) {
+          axios.post('http://localhost:5000/login', user).then(result => {
+            console.log(result.data.access_token);
+            axios.get('http://localhost:5000/home', { headers: {"Authorization" : `Bearer ${result.data.access_token}`} }).then(loginInfo => {
+              console.log(loginInfo)
+              this.setState({username: loginInfo.data.username, funds: loginInfo.data.funds, hasSubmitted : true, access_token : result.data.access_token});
+            });
+          })
+          .catch(error => {
+            console.log(error);
+            alert("Invalid account information. Please try again");
           });
-        })
-        .catch(error => {
-          console.log(error);
-          alert("Invalid account information. Please try again");
-        });
+        }
+        else {
+          axios.post('http://localhost:5000/login', user).then(result => {
+            Cookies.set('access_token_cookie', `${result.data.access_token}`)
+            axios.post('http://localhost:5000/home-insecure', user, { withCredentials: true}).then(loginInfo => {
+              this.setState({username: loginInfo.data.username, funds: loginInfo.data.funds, hasSubmitted : true, access_token : result.data.access_token});
+            });
+          })
+          .catch(error => {
+            console.log(error);
+            alert("Invalid account information. Please try again");
+          });
+        }
     }
   }
   
