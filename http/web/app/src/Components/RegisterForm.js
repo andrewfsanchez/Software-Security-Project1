@@ -4,7 +4,7 @@ import axios from 'axios'
 import Cookies from 'js-cookie'
 
 class RegisterForm extends React.Component {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       email : "",
@@ -13,7 +13,8 @@ class RegisterForm extends React.Component {
       funds : 0,
       isError : false,
       hasSubmitted : false,
-      access_token: ""
+      access_token: "",
+      enableSecurity : props.location.state.enableSecurity
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -73,7 +74,7 @@ class RegisterForm extends React.Component {
     render() {
         if(this.state.hasSubmitted) {
             return(
-                <Redirect from="/" to={{pathname: "/Dashboard", state: { email: this.state.email, username: this.state.username, funds: this.state.funds, access_token: this.state.access_token}}} />
+                <Redirect from="/" to={{pathname: "/Dashboard", state: { email: this.state.email, username: this.state.username, funds: this.state.funds, access_token: this.state.access_token, enableSecurity: this.state.enableSecurity}}} />
             );
         }
         else {

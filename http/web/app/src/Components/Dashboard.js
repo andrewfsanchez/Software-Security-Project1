@@ -13,7 +13,8 @@ class Dashboard extends React.Component {
             funds : 0,
             transferTo : "",
             transferAmount : "",
-            access_token: ""
+            access_token: "",
+            enableSecurity: false
         }
 
         if(props.location.state !== undefined) {
@@ -23,7 +24,8 @@ class Dashboard extends React.Component {
                 funds : props.location.state.funds,
                 transferTo : "", 
                 transferAmount : "",
-                access_token : props.location.state.access_token
+                access_token : props.location.state.access_token,
+                enableSecurity : props.location.state.enableSecurity
             }
         }
 
@@ -86,7 +88,7 @@ class Dashboard extends React.Component {
                     <br />
                     <h2>Available funds: {this.state.funds}</h2>
                     <br />
-                    <Search />
+                    <Search enableSecurity={this.state.enableSecurity} />
                     <br /><br /><br />
                     <form onSubmit={this.handleSubmit}>
                         <h3>Transfer Money:</h3>

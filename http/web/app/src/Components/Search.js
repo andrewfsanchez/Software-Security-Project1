@@ -3,11 +3,12 @@ import {Redirect} from 'react-router-dom'
 import axios from 'axios'
 
 class Search extends React.Component {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
         username: "",
         hasSubmitted: false,
+        enableSecurity: props.enableSecurity,
         users: [{
           email : "",
           username : "",
@@ -20,7 +21,7 @@ class Search extends React.Component {
     this.resetSearch = this.resetSearch.bind(this);
   }
 
-  resetSearch(evemt) {
+  resetSearch(event) {
     this.setState({hasSubmitted: false});
   }
 
@@ -41,27 +42,38 @@ class Search extends React.Component {
     event.preventDefault();
 
 
-        /**
-        * No error, then get the information from the database and continue from there
-        * insert logic here
-        * {'Authorization': 'Bearer <JWT>'}
-        * 
-        * if not in database, return alert
-        */
+      /**
+      * No error, then get the information from the database and continue from there
+      * insert logic here
+      * {'Authorization': 'Bearer <JWT>'}
+      * 
+      * if not in database, return alert
+      */
 
-        const user = {username: this.state.username};
+      const user = {username: this.state.username};
 
-        axios.post('http://localhost:5000/search', user).then(result => {
-          console.log(result.data.access_token);
-          this.setState({
-              users : result.data.users, 
-              hasSubmitted: true
-          })
+      if(this.state.enableSecurity) {
+        //Take security measures to stop SQL injection attacks such as sanitizing input
+
+        if(this.state.username.includes("'") || this.state.username.includes(" ") || 
+          this.state.username.includes("-") || this.state.username.includes("=") || 
+          this.state.username.includes(";")) {
+            alert("Invalid username given. Username cannot include at least one given character");
+            return;
+          }
+      }
+
+      axios.post('http://localhost:5000/search', user).then(result => {
+        console.log(result.data.access_token);
+        this.setState({
+            users : result.data.users, 
+            hasSubmitted: true
         })
-        .catch(error => {
-          console.log(error);
-          alert("Invalid account information. Please try again");
-        });
+      })
+      .catch(error => {
+        console.log(error);
+        alert("Invalid account information. Please try again");
+      });
   }
   
 
