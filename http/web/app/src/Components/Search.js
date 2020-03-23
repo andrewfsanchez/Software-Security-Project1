@@ -12,8 +12,7 @@ class Search extends React.Component {
           email : "",
           username : "",
           funds : 0
-        }]
-      
+        }]   
     };
 
     this.handleChange = this.handleChange.bind(this);
