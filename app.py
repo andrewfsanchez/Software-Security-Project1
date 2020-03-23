@@ -72,11 +72,16 @@ def login():
     password = bytes(requestData['password'].encode('utf-8'))
 
     try:
+        a="SELECT * FROM accounts WHERE email= '%s';" % email
+        print (a)
+        cursor.execute(a)
         
-        cursor.executescript("SELECT * FROM accounts WHERE email= '%s'" % email)
-
         connection.commit()
+        
+
         user=cursor.fetchone()
+
+        print(user)
         hashedpass=''
 
         try:
@@ -84,15 +89,14 @@ def login():
         except:
             hashedpass=''
         #pepper = bytes("sneezeSauce", 'utf-8')
+        
         pepper = bytes("sneezeSauce".encode('utf-8'))
 
         pepperedPass = password + pepper
-
         
         if hashedpass!='' and bcrypt.checkpw(pepperedPass, hashedpass):
             #login token stuff
             access_token = create_access_token(identity=email)
-            
 
             #refresh_token = create_refresh_token(identity=email)
             return (json.dumps({'access_token': access_token}), 200, {'content-type':'application/json'})
@@ -111,10 +115,10 @@ def get():
     connection = sqlite3.connect('fakebank.db')
     cursor= connection.cursor()
     
-    current_user=demjson.decode(request.data)["email"]
+    #current_user=demjson.decode(request.data)["email"]
 
     try:
-        #current_user=get_jwt_identity()
+        current_user=get_jwt_identity()
         cursor.execute("SELECT * FROM accounts WHERE email= ?", (current_user,))
         connection.commit()
 
@@ -158,6 +162,29 @@ def transfer():
         return (json.dumps({'success': 'funds transfered'}), 200, {'content-type':'application/json'})
     except:
         return (json.dumps({'error': 'querry error'}), 400, {'content-type':'application/json'})
+
+
+
+@app.route('/search', methods=['POST'])
+def search():
+    connection = sqlite3.connect('fakebank.db')
+    cursor= connection.cursor()
+
+    requestData = demjson.decode(request.data)
+    username = requestData['username']
+
+    print("SELECT * FROM accounts WHERE username= '%s';" % username)
+
+    cursor.execute("SELECT * FROM accounts WHERE username= '%s';" % username)
+    
+    connection.commit()
+
+    users=[]
+    for row in cursor.fetchall():
+        users.append({'username':row[1],'funds':row[2]})
+
+    print(users)
+    return (json.dumps({'users': users}), 200, {'content-type':'application/json'})
 
 if __name__ == '__main__':
     app.run(debug=True)

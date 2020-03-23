@@ -4,6 +4,7 @@ import {Route} from 'react-router-dom'
 import Register from './Components/RegisterForm'
 import Login from './Components/LoginForm'
 import Dashboard from './Components/Dashboard'
+import Search from './Components/Search'
 import './App.css';
 
 class App extends React.Component {
@@ -14,6 +15,7 @@ class App extends React.Component {
         <Route exact path="/Login" component={Login} />
         <Route exact path="/Register" component={Register} />
         <Route exact path="/Dashboard" component={Dashboard} />
+        <Route exact path="/Search" component={Search} />
       </div>
     );
   }
