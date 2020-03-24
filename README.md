@@ -8,6 +8,6 @@ SQL injection: https://www.youtube.com/watch?v=pXFihys7pyI
 
 IDOR: https://www.youtube.com/watch?v=TBdiKiMpdVo
 
-CSRF: Link here
+CSRF: https://www.youtube.com/watch?v=aEC1HiTkOV0
 
 XSS: https://www.youtube.com/watch?v=YOtaV5Kqe1k
