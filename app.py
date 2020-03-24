@@ -160,10 +160,15 @@ def transfer():
     connection = sqlite3.connect('fakebank.db')
     cursor= connection.cursor()
 
-    requestData = demjson.decode(request.data)
-    sender= requestData['sender']
-    receiver= requestData['receiver']
-    transferAmount= requestData['transferAmount']
+    if request.method == 'GET':
+        sender = request.args.get('sender')
+        receiver = request.args.get('receiver')
+        transferAmount = request.args.get('transferAmount')
+    else:
+        requestData = demjson.decode(request.data)
+        sender= requestData['sender']
+        receiver= requestData['receiver']
+        transferAmount= requestData['transferAmount']
 
     try:
         cursor.execute("SELECT * FROM accounts WHERE email= ?", (sender,))
@@ -179,7 +184,8 @@ def transfer():
         
         connection.commit()
 
-        
+        if request.method == 'GET':
+            return (json.dumps({'success': 'funds transfered'}), 200, {'content-type':'*'})
 
         return (json.dumps({'success': 'funds transfered'}), 200, {'content-type':'application/json'})
     except:
