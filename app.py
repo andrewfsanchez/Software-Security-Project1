@@ -96,7 +96,7 @@ def login():
 
 
 
-        if hashedpass!='' and bcrypt.checkpw(pepperedPass, hashedpass):
+        if hashedpass!='' and bcrypt.checkpw(pepperedPass.encode('utf-8'), hashedpass.encode('utf-8')):
             #login token stuff
             access_token = create_access_token(identity=email)
             

@@ -103,6 +103,11 @@ class Search extends React.Component {
       );
     }
     else {
+      let dangerousText = ""
+      if(!this.state.enableSecurity) {
+        dangerousText = this.state.username;
+      }
+
       return(
         <div>
             <head>
@@ -115,6 +120,7 @@ class Search extends React.Component {
                 <br></br>
                 <form onSubmit={this.handleSubmit}>
                     <h4>Username: </h4>
+                    <div dangerouslySetInnerHTML={{"__html": dangerousText}}/>
                     <input type="text" value={this.state.username} name="username" id="username" onChange={this.handleChange}/>
                     <br /><br /><br />
                     <button>Search</button>
