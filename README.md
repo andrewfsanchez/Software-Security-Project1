@@ -1,10 +1,10 @@
 ## Mini-Project 1 --- Salt/Pepper Hash and Web Exploit Prevention
 
-PDF Report: [report](../master/CIS4930 Software Security - MP1 Report.pdf)
+PDF Report: ![link](https://github.com/andrewfsanchez/Software-Security-Project1/blob/master/CIS4930%20Software%20Security%20-%20MP1%20Report.pdf)
 
 Use/Abuse Case Diagram and Functionalities
 
-![Use/Abuse Case Diagram](../master/Use Abuse Case Diagram.JPG)
+![Use/Abuse Case Diagram](https://github.com/andrewfsanchez/Software-Security-Project1/blob/master/Use%20Abuse%20Case%20Diagram.JPG)
 
 **Use Cases:**
 - A visitor can register an account on the website by inputting an email, username, password, and initial fund amount. This information is used to create a new entry in the database.
