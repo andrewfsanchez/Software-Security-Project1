@@ -1,8 +1,10 @@
 ## Mini-Project 1 --- Salt/Pepper Hash and Web Exploit Prevention
 
+Website: https://software-security-project-1.appspot.com/
+
 PDF Report: ![link](https://github.com/andrewfsanchez/Software-Security-Project1/blob/master/CIS4930%20Software%20Security%20-%20MP1%20Report.pdf)
 
-Use/Abuse Case Diagram and Functionalities
+Use/Abuse Case Diagram and Functionalities/Exploits/Risks:
 
 ![Use/Abuse Case Diagram](https://github.com/andrewfsanchez/Software-Security-Project1/blob/master/Use%20Abuse%20Case%20Diagram.JPG)
 
