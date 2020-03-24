@@ -96,7 +96,7 @@ def login():
 
 
 
-        if hashedpass!='' and bcrypt.checkpw(pepperedPass.encode('utf-8'), hashedpass.encode('utf-8')):
+        if hashedpass!='' and bcrypt.checkpw(pepperedPass, hashedpass):
             #login token stuff
             access_token = create_access_token(identity=email)
             
@@ -153,7 +153,7 @@ def get_secure():
         return (json.dumps({'error': 'querry error'}), 400, {'content-type':'application/json'})
     
 
-@app.route('/transfer', methods=['POST'])
+@app.route('/transfer', methods=['POST', 'GET'])
 @jwt_required
 def transfer():
     print('hey')
